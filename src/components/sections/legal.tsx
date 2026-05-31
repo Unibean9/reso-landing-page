@@ -5,32 +5,47 @@ import LegalContent from "./legal-content";
 
 async function getLegalMarkdown() {
   noStore();
-  const filePath = path.join(process.cwd(), "docs", "terms-and-privacy-vi.md");
-  return fs.readFile(filePath, "utf8");
+  const docsPath = path.join(process.cwd(), "docs");
+
+  const [miniAppContent, appContent] = await Promise.all([
+    fs.readFile(
+      path.join(docsPath, "terms-and-privacy-zalo-miniapp-vi.md"),
+      "utf8",
+    ),
+    fs.readFile(path.join(docsPath, "terms-and-privacy-app-vi.md"), "utf8"),
+  ]);
+
+  return {
+    miniApp: miniAppContent,
+    app: appContent,
+  };
 }
 
 export default async function LegalSection() {
   const content = await getLegalMarkdown();
 
   return (
-    <section id="legal" className="bg-app-bg px-5 py-18 sm:px-6">
+    <section
+      id="legal"
+      className="bg-[radial-gradient(circle_at_top,rgba(38,166,154,0.16),transparent_34%),linear-gradient(180deg,#041a17_0%,#06211d_100%)] px-5 py-18 sm:px-6"
+    >
       <div className="mx-auto max-w-5xl">
-        <div className="rounded-[2rem] border border-border/70 bg-background/95 p-6 shadow-sm backdrop-blur sm:p-8 lg:p-10">
-          <div className="max-w-3xl">
-            <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
-              Pháp lý
-            </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Điều khoản sử dụng và Chính sách quyền riêng tư
-            </h2>
-            <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-base">
-              Nội dung bên dưới áp dụng cho việc truy cập và sử dụng Mini App
-              Reso trên nền tảng Zalo Mini App.
-            </p>
-          </div>
-
-          <LegalContent content={content} />
-        </div>
+        <LegalContent
+          contents={[
+            {
+              id: "miniapp",
+              label: "Zalo Mini App",
+              description: "Điều khoản áp dụng cho Reso trên nền tảng Zalo.",
+              content: content.miniApp,
+            },
+            {
+              id: "app",
+              label: "Ứng dụng",
+              description: "Điều khoản áp dụng cho phiên bản app độc lập.",
+              content: content.app,
+            },
+          ]}
+        />
       </div>
     </section>
   );
