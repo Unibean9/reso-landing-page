@@ -4,6 +4,10 @@ const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
 });
 
+export const PROGRAM_STATUSES = ["RUNNING", "PLANNED", "FINISHED", "STOPPED"] as const;
+
+export type ProgramStatus = (typeof PROGRAM_STATUSES)[number];
+
 export interface ProgramTier {
   id: string;
   name: string;
@@ -17,10 +21,10 @@ export interface ProgramTier {
 export interface ProgramCampaign {
   id: string;
   name: string;
-  bannerImg: string;
+  bannerImg: string | null;
   startDate: string;
   expirationDate: string | null;
-  status: string;
+  status: ProgramStatus | string;
 }
 
 export interface Program {
@@ -29,7 +33,7 @@ export interface Program {
   description: string;
   startDate: string;
   expiredDate: string | null;
-  status: string;
+  status: ProgramStatus | string;
   tiers: ProgramTier[];
   campaigns: ProgramCampaign[];
 }
@@ -54,14 +58,26 @@ export function formatCampaignDate(date: string): string {
   });
 }
 
+export function formatCampaignPeriod(startDate: string, expirationDate: string | null): string {
+  const start = formatCampaignDate(startDate);
+  if (!expirationDate) return `Từ ${start}`;
+  return `${start} - ${formatCampaignDate(expirationDate)}`;
+}
+
+export function isRunningCampaign(status: string): boolean {
+  return status === "RUNNING";
+}
+
 export function getCampaignStatusLabel(status: string): string {
   switch (status) {
     case "RUNNING":
       return "Đang diễn ra";
-    case "UPCOMING":
+    case "PLANNED":
       return "Sắp diễn ra";
-    case "ENDED":
+    case "FINISHED":
       return "Đã kết thúc";
+    case "STOPPED":
+      return "Đã dừng";
     default:
       return status;
   }

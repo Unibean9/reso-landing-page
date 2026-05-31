@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion, type Variants } from "motion/react";
-import { Twitter, Github, Linkedin } from "lucide-react";
+import { Facebook, Youtube } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
@@ -16,13 +16,26 @@ interface FooterProps {
   tagline?: string;
   columns?: FooterColumn[];
   socials?: {
-    twitter?: string;
-    github?: string;
-    linkedin?: string;
+    facebook?: string;
+    youtube?: string;
+    tiktok?: string;
   };
   copyright?: string;
   legalLinks?: { text: string; url: string }[];
   className?: string;
+}
+
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M19.59 6.69A4.83 4.83 0 0 1 16 5.13V16a6 6 0 1 1-6-6c.2 0 .39.02.58.05v3.04a3 3 0 1 0 2.42 2.95V2h3.01a4.85 4.85 0 0 0 4.58 4.69v2Z" />
+    </svg>
+  );
 }
 
 const defaultColumns: FooterColumn[] = [
@@ -31,7 +44,7 @@ const defaultColumns: FooterColumn[] = [
     links: [
       { text: "Tính năng", url: "#features" },
       { text: "Cách hoạt động", url: "#how-it-works" },
-      { text: "Đánh giá", url: "#testimonials" },
+      { text: "Điều khoản", url: "#legal" },
     ],
   },
   {
@@ -55,9 +68,8 @@ const defaultColumns: FooterColumn[] = [
 ];
 
 const defaultLegalLinks = [
-  { text: "Điều khoản", url: "#" },
-  { text: "Quyền riêng tư", url: "#" },
-  { text: "Cookie", url: "#" },
+  { text: "Điều khoản sử dụng", url: "#legal" },
+  { text: "Quyền riêng tư", url: "#legal" },
 ];
 
 const containerVariants: Variants = {
@@ -78,7 +90,7 @@ export default function Footer({
   brandName = siteConfig.name,
   tagline = siteConfig.description,
   columns = defaultColumns,
-  socials = { twitter: "#", github: "#", linkedin: "#" },
+  socials = { facebook: "#", youtube: "#", tiktok: "#" },
   copyright = `© ${new Date().getFullYear()} ${siteConfig.name}. Bảo lưu mọi quyền.`,
   legalLinks = defaultLegalLinks,
   className,
@@ -132,37 +144,37 @@ export default function Footer({
               Mạng xã hội
             </p>
             <div className="flex items-center gap-3 md:justify-end">
-              {socials.twitter && (
+              {socials.facebook && (
                 <a
-                  href={socials.twitter}
+                  href={socials.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Twitter / X"
+                  aria-label="Facebook"
                   className="flex size-9 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-all duration-200 hover:border-foreground/30 hover:bg-accent hover:text-foreground"
                 >
-                  <Twitter className="size-3.5" />
+                  <Facebook className="size-3.5" />
                 </a>
               )}
-              {socials.github && (
+              {socials.youtube && (
                 <a
-                  href={socials.github}
+                  href={socials.youtube}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="GitHub"
+                  aria-label="YouTube"
                   className="flex size-9 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-all duration-200 hover:border-foreground/30 hover:bg-accent hover:text-foreground"
                 >
-                  <Github className="size-3.5" />
+                  <Youtube className="size-3.5" />
                 </a>
               )}
-              {socials.linkedin && (
+              {socials.tiktok && (
                 <a
-                  href={socials.linkedin}
+                  href={socials.tiktok}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="LinkedIn"
+                  aria-label="TikTok"
                   className="flex size-9 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-all duration-200 hover:border-foreground/30 hover:bg-accent hover:text-foreground"
                 >
-                  <Linkedin className="size-3.5" />
+                  <TikTokIcon className="size-3.5" />
                 </a>
               )}
             </div>
@@ -193,7 +205,7 @@ export default function Footer({
         </motion.div>
       </motion.div>
 
-      <motion.p
+      {/* <motion.p
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
@@ -203,7 +215,7 @@ export default function Footer({
         aria-hidden
       >
         {brandName}
-      </motion.p>
+      </motion.p> */}
     </footer>
   );
 }
