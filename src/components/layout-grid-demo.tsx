@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { FadeIn } from "@/components/fade-in";
 import { LayoutGrid, type LayoutGridCard } from "@/components/ui/layout-grid";
 import {
   fetchPublicPrograms,
-  formatCampaignDate,
+  formatCampaignPeriod,
   getCampaignStatusLabel,
+  isRunningCampaign,
   stripHtml,
   type Program,
   type ProgramCampaign,
@@ -39,29 +40,36 @@ function CampaignCard({
 
 function buildCardsFromPrograms(programs: Program[]): LayoutGridCard[] {
   const runningCampaigns = programs.flatMap((program) =>
-    program.campaigns
-      .filter((campaign) => campaign.status === "RUNNING")
+    (program.campaigns ?? [])
+      .filter((campaign) => isRunningCampaign(campaign.status))
       .map((campaign) => ({ campaign, program })),
   );
 
-  return runningCampaigns.map(({ campaign, program }) => toLayoutGridCard(campaign, program));
+  return runningCampaigns
+    .sort((a, b) => new Date(b.campaign.startDate).getTime() - new Date(a.campaign.startDate).getTime())
+    .map(({ campaign, program }, index) => toLayoutGridCard(campaign, program, index));
 }
 
-function toLayoutGridCard(campaign: ProgramCampaign, program: Program): LayoutGridCard {
+function toLayoutGridCard(
+  campaign: ProgramCampaign,
+  program: Program,
+  index: number,
+): LayoutGridCard {
   const subtitle = [
     program.name,
     getCampaignStatusLabel(campaign.status),
-    formatCampaignDate(campaign.startDate),
+    formatCampaignPeriod(campaign.startDate, campaign.expirationDate),
   ].join(" · ");
 
   return {
     id: campaign.id,
-    thumbnail: campaign.bannerImg,
+    thumbnail: campaign.bannerImg || "/assets/aisaas_template.png",
+    featured: index === 0,
     content: (
       <CampaignCard
         title={campaign.name}
         subtitle={subtitle}
-        description={stripHtml(program.description)}
+        description={stripHtml(program.description) || "Chương trình công khai đang mở trên RESO."}
       />
     ),
   };
@@ -114,7 +122,7 @@ export default function LayoutGridDemo({
     };
   }, []);
 
-  const isEmpty = useMemo(() => !loading && !error && cards.length === 0, [loading, error, cards.length]);
+  const isEmpty = !loading && !error && cards.length === 0;
 
   return (
     <section id="campaigns" className={cn("border-t border-border px-5 py-24", className)}>
