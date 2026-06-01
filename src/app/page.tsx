@@ -6,7 +6,6 @@ import FAQ from "@/components/sections/faq";
 import CTA from "@/components/sections/cta";
 import Footer from "@/components/sections/footer";
 import LayoutGridDemo from "@/components/layout-grid-demo";
-import LegalSection from "@/components/sections/legal";
 
 export default function Page() {
   return (
@@ -20,7 +19,6 @@ export default function Page() {
         <LayoutGridDemo />
         <FAQ />
         <CTA />
-        <LegalSection />
       </main>
       <Footer />
     </>

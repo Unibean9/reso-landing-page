@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from 'react';
+import { useId, type HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface IphoneProps extends HTMLAttributes<HTMLDivElement> {
@@ -19,6 +19,14 @@ export function Iphone({
   children,
   ...props
 }: IphoneProps) {
+  const rawId = useId();
+  const id = rawId.replace(/:/g, '');
+  const maskId = `hole-${id}`;
+  const metalGrad1Id = `metalGrad1-${id}`;
+  const metalGrad2Id = `metalGrad2-${id}`;
+  const metalGrad3Id = `metalGrad3-${id}`;
+  const lensGradId = `lensGrad-${id}`;
+
   const calcX = (21.25 / 433) * 100;
   const calcY = (19.25 / 882) * 100;
   const calcW = (389.5 / 433) * 100;
@@ -116,26 +124,26 @@ export function Iphone({
         className='absolute inset-0 size-full pointer-events-none'
         style={{ transform: 'translateZ(0)', zIndex: 20 }}
       >
-        <g mask='url(#hole)'>
+        <g mask={`url(#${maskId})`}>
           <path
             d='M2 73C2 32.6832 34.6832 0 75 0H357C397.317 0 430 32.6832 430 73V809C430 849.317 397.317 882 357 882H75C34.6832 882 2 849.317 2 809V73Z'
-            fill='url(#metalGrad1)'
+            fill={`url(#${metalGrad1Id})`}
           />
           <path
             d='M0 171C0 170.448 0.447715 170 1 170H3V204H1C0.447715 204 0 203.552 0 203V171Z'
-            fill='url(#metalGrad2)'
+            fill={`url(#${metalGrad2Id})`}
           />
           <path
             d='M1 234C1 233.448 1.44772 233 2 233H3.5V300H2C1.44772 300 1 299.552 1 299V234Z'
-            fill='url(#metalGrad2)'
+            fill={`url(#${metalGrad2Id})`}
           />
           <path
             d='M1 319C1 318.448 1.44772 318 2 318H3.5V385H2C1.44772 385 1 384.552 1 384V319Z'
-            fill='url(#metalGrad2)'
+            fill={`url(#${metalGrad2Id})`}
           />
           <path
             d='M430 279H432C432.552 279 433 279.448 433 280V384C433 384.552 432.552 385 430 385H430V279Z'
-            fill='url(#metalGrad2)'
+            fill={`url(#${metalGrad2Id})`}
           />
           <path
             d='M6 74C6 35.3401 37.3401 4 76 4H356C394.66 4 426 35.3401 426 74V808C426 846.66 394.66 878 356 878H76C37.3401 878 6 846.66 6 808V74Z'
@@ -151,10 +159,10 @@ export function Iphone({
 
         <path
           d='M21.25 75C21.25 44.2101 46.2101 19.25 77 19.25H355C385.79 19.25 410.75 44.2101 410.75 75V807C410.75 837.79 385.79 862.75 355 862.75H77C46.2101 862.75 21.25 837.79 21.25 807V75Z'
-          fill='url(#metalGrad3)'
-          stroke='url(#metalGrad3)'
+          fill={`url(#${metalGrad3Id})`}
+          stroke={`url(#${metalGrad3Id})`}
           strokeWidth='0.5'
-          mask='url(#hole)'
+          mask={`url(#${maskId})`}
         />
 
         <path
@@ -167,12 +175,12 @@ export function Iphone({
         />
         <path
           d='M254 48.5C254 45.4624 256.462 43 259.5 43C262.538 43 265 45.4624 265 48.5C265 51.5376 262.538 54 259.5 54C256.462 54 254 51.5376 254 48.5Z'
-          fill='url(#lensGrad)'
+          fill={`url(#${lensGradId})`}
         />
 
         <defs>
           <linearGradient
-            id='metalGrad1'
+            id={metalGrad1Id}
             x1='216'
             y1='0'
             x2='216'
@@ -184,7 +192,7 @@ export function Iphone({
             <stop offset='1' stopColor='#a8a8a8' />
           </linearGradient>
           <linearGradient
-            id='metalGrad2'
+            id={metalGrad2Id}
             x1='2'
             y1='170'
             x2='2'
@@ -195,7 +203,7 @@ export function Iphone({
             <stop offset='1' stopColor='#9a9a9a' />
           </linearGradient>
           <linearGradient
-            id='metalGrad3'
+            id={metalGrad3Id}
             x1='216'
             y1='19'
             x2='216'
@@ -207,7 +215,7 @@ export function Iphone({
             <stop offset='1' stopColor='#949494' />
           </linearGradient>
           <radialGradient
-            id='lensGrad'
+            id={lensGradId}
             cx='259.5'
             cy='48.5'
             r='5.5'
@@ -218,7 +226,7 @@ export function Iphone({
             <stop offset='0.7' stopColor='#1a2d4d' />
             <stop offset='1' stopColor='#0a1428' />
           </radialGradient>
-          <mask id='hole' maskUnits='userSpaceOnUse'>
+          <mask id={maskId} maskUnits='userSpaceOnUse'>
             <rect x='0' y='0' width='433' height='882' fill='white' />
             <rect
               x='21.25'
