@@ -10,6 +10,8 @@ import {
   Smartphone,
   Gift,
   Trophy,
+  ChevronLeft,
+  ChevronRight,
   type LucideIcon,
 } from "lucide-react";
 import { Iphone } from "@/components/ui/iphone";
@@ -1038,7 +1040,8 @@ function PhoneScreen({ image, title }: { image: string; title: string }) {
   );
 }
 
-export default function HowItWorks({
+
+function HowItWorksDesktop({
   heading = "Cách RESO hoạt động",
   headingAccent = "chỉ với bốn bước đơn giản.",
   items = defaultItems,
@@ -1055,7 +1058,7 @@ export default function HowItWorks({
       ref={sectionRef}
       id="how-it-works"
       className={cn(
-        "relative shrink-0 border-t border-border bg-app-bg dark:border-border/60",
+        "relative shrink-0 border-t border-border bg-app-bg dark:border-border/60 hidden md:block",
         className,
       )}
       style={{ height: `${sectionHeightVh}dvh` }}
@@ -1133,5 +1136,189 @@ export default function HowItWorks({
         </div>
       </div>
     </section>
+  );
+}
+
+function HowItWorksMobile({
+  heading = "Cách RESO hoạt động",
+  headingAccent = "chỉ với bốn bước đơn giản.",
+  items = defaultItems,
+  className,
+}: HowItWorksProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeItem = items[activeIndex];
+  const sliderRef = useRef<HTMLDivElement>(null);
+
+  // Xử lý sự kiện scroll để đồng bộ activeIndex khi vuốt ngang phần note
+  const handleScroll = useCallback(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+    const { scrollLeft, clientWidth } = slider;
+    if (clientWidth === 0) return;
+    const index = Math.round(scrollLeft / clientWidth);
+    if (index !== activeIndex && index >= 0 && index < items.length) {
+      setActiveIndex(index);
+    }
+  }, [activeIndex, items.length]);
+
+  // Hàm chuyển slide mượt mà khi click dots pagination
+  const scrollToSlide = (index: number) => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+    slider.scrollTo({
+      left: index * slider.clientWidth,
+      behavior: "smooth",
+    });
+    setActiveIndex(index);
+  };
+
+  return (
+    <section
+      id="how-it-works-mobile"
+      className={cn(
+        "relative shrink-0 border-t border-border bg-app-bg dark:border-border/60 block md:hidden py-12 px-4 overflow-hidden",
+        className,
+      )}
+      aria-label="Cách RESO hoạt động (Mobile)"
+    >
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div
+          className="absolute inset-0 opacity-25 dark:opacity-10"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, var(--border) 1px, transparent 1px),
+              linear-gradient(to bottom, var(--border) 1px, transparent 1px)
+            `,
+            backgroundSize: "40px 40px",
+            maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent)",
+          }}
+        />
+      </div>
+
+      <div className="relative z-10 mx-auto w-full max-w-sm flex flex-col items-center">
+        <header className="w-full text-center mb-8">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+            {heading}
+            <span className="block mt-1 text-sm font-normal text-muted-foreground">
+              {headingAccent}
+            </span>
+          </h2>
+        </header>
+
+        {/* 1. Điện thoại ở TRÊN - Căn giữa và hiển thị to rõ nét với kích thước cố định bằng inline style */}
+        <div className="relative flex justify-center items-center w-full mb-8">
+          <div
+            className="pointer-events-none absolute size-56 rounded-full bg-primary/10 blur-3xl dark:bg-primary/5"
+            aria-hidden
+          />
+          
+          <Iphone
+            screenFullBleed
+            screenClassName="bg-white dark:bg-black"
+            className="relative z-10 shrink-0"
+            style={{ width: "190px", height: "387px" }}
+            aria-label={activeItem?.title ?? "RESO app"}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              {activeItem && (
+                <PhoneScreen
+                  key={activeItem.image}
+                  image={activeItem.image}
+                  title={activeItem.title}
+                />
+              )}
+            </AnimatePresence>
+          </Iphone>
+        </div>
+
+        {/* 2. Phần Note ở DƯỚI - Slider vuốt ngang snap mượt mà kèm 2 nút mũi tên Trái/Phải */}
+        <div className="w-full mt-2 relative">
+          
+          <div className="relative w-full px-8">
+            {/* Nút Trái */}
+            <button
+              onClick={() => {
+                const prevIndex = (activeIndex - 1 + items.length) % items.length;
+                scrollToSlide(prevIndex);
+              }}
+              className="absolute left-0 top-1/2 -translate-y-1/2 size-7 rounded-full border border-border bg-background flex items-center justify-center text-muted-foreground hover:text-foreground active:scale-95 transition-transform z-20 cursor-pointer"
+              aria-label="Previous step"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+
+            {/* Slider */}
+            <div
+              ref={sliderRef}
+              onScroll={handleScroll}
+              className="flex w-full overflow-x-auto snap-x snap-mandatory scrollbar-none gap-0"
+              style={{
+                scrollSnapType: "x mandatory",
+                WebkitOverflowScrolling: "touch",
+              }}
+            >
+              {items.map((item) => {
+                return (
+                  <div
+                    key={item.tag}
+                    className="w-full shrink-0 snap-center flex flex-col items-center text-center px-4"
+                  >
+                    <div className="flex items-center gap-1.5 justify-center">
+                      <span className="font-mono text-xs font-bold text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-sm">
+                        {item.tag}
+                      </span>
+                      <h3 className="text-sm font-bold text-foreground">
+                        {item.title}
+                      </h3>
+                    </div>
+                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground max-w-[270px]">
+                      {item.body}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Nút Phải */}
+            <button
+              onClick={() => {
+                const nextIndex = (activeIndex + 1) % items.length;
+                scrollToSlide(nextIndex);
+              }}
+              className="absolute right-0 top-1/2 -translate-y-1/2 size-7 rounded-full border border-border bg-background flex items-center justify-center text-muted-foreground hover:text-foreground active:scale-95 transition-transform z-20 cursor-pointer"
+              aria-label="Next step"
+            >
+              <ChevronRight className="size-4" />
+            </button>
+          </div>
+
+          {/* Dots Pagination chỉ thị slide */}
+          <div className="flex justify-center gap-1.5 mt-5">
+            {items.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => scrollToSlide(index)}
+                className={cn(
+                  "size-1.5 rounded-full transition-all duration-300",
+                  index === activeIndex
+                    ? "bg-primary w-4"
+                    : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                )}
+                aria-label={`Go to step ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function HowItWorks(props: HowItWorksProps) {
+  return (
+    <>
+      <HowItWorksDesktop {...props} />
+      <HowItWorksMobile {...props} />
+    </>
   );
 }

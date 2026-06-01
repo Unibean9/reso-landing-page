@@ -42,9 +42,9 @@ const defaultColumns: FooterColumn[] = [
   {
     heading: "Sản phẩm",
     links: [
-      { text: "Tính năng", url: "#features" },
-      { text: "Cách hoạt động", url: "#how-it-works" },
-      { text: "Điều khoản", url: "#legal" },
+      { text: "Tính năng", url: "/#features" },
+      { text: "Cách hoạt động", url: "/#how-it-works" },
+      { text: "Điều khoản", url: "/terms-of-services" },
     ],
   },
   {
@@ -62,14 +62,14 @@ const defaultColumns: FooterColumn[] = [
       { text: "Tài liệu", url: "#" },
       { text: "API", url: "#" },
       { text: "Trạng thái", url: "#" },
-      { text: "Câu hỏi thường gặp", url: "#faq" },
+      { text: "Câu hỏi thường gặp", url: "/#faq" },
     ],
   },
 ];
 
 const defaultLegalLinks = [
-  { text: "Điều khoản sử dụng", url: "#legal" },
-  { text: "Quyền riêng tư", url: "#legal" },
+  { text: "Điều khoản sử dụng", url: "/terms-of-services" },
+  { text: "Quyền riêng tư", url: "/terms-of-services" },
 ];
 
 const containerVariants: Variants = {
