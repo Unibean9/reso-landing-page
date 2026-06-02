@@ -25,10 +25,7 @@ export default async function LegalSection() {
   const content = await getLegalMarkdown();
 
   return (
-    <section
-      id="legal"
-      className="bg-[radial-gradient(circle_at_top,rgba(38,166,154,0.16),transparent_34%),linear-gradient(180deg,#041a17_0%,#06211d_100%)] px-5 py-18 sm:px-6"
-    >
+    <section id="legal" className="bg-app-bg px-5 py-18 text-foreground sm:px-6">
       <div className="mx-auto max-w-5xl">
         <LegalContent
           contents={[

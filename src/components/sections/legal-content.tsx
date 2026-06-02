@@ -1,28 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  BadgeCheck,
-  Bell,
-  ChevronDown,
-  ChevronUp,
-  CircleHelp,
-  FileCheck2,
-  FileText,
-  Gift,
-  Globe,
-  IdCard,
-  Info,
-  Landmark,
-  Lock,
-  Scale,
-  Shield,
-  ShieldAlert,
-  UserCheck,
-  Wallet,
-} from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { Button } from "@/components/ui/button";
 
 interface LegalContentProps {
   contents: {
@@ -44,25 +23,6 @@ interface ParsedLegalContent {
   intro: string[];
   sections: LegalSectionItem[];
 }
-
-const sectionIcons = [
-  Info,
-  UserCheck,
-  IdCard,
-  Gift,
-  ShieldAlert,
-  Shield,
-  Lock,
-  FileCheck2,
-  Globe,
-  Scale,
-  Bell,
-  Landmark,
-  BadgeCheck,
-  Wallet,
-  CircleHelp,
-  FileText,
-];
 
 function parseLegalContent(content: string): ParsedLegalContent {
   const lines = content.split(/\r?\n/);
@@ -116,81 +76,49 @@ function parseLegalContent(content: string): ParsedLegalContent {
   return { title, updatedAt, intro, sections };
 }
 
-function SectionCard({
+function LegalMarkdown({ content }: { content: string }) {
+  return (
+    <ReactMarkdown
+      components={{
+        p: ({ children }) => <p className="mb-5 last:mb-0">{children}</p>,
+        ul: ({ children }) => (
+          <ul className="mb-5 ml-5 list-disc space-y-2 last:mb-0">
+            {children}
+          </ul>
+        ),
+        li: ({ children }) => <li>{children}</li>,
+        strong: ({ children }) => (
+          <strong className="font-semibold text-foreground">{children}</strong>
+        ),
+        a: ({ children, href }) => (
+          <a
+            href={href}
+            className="font-medium text-primary underline underline-offset-4"
+          >
+            {children}
+          </a>
+        ),
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+}
+
+function ContentSection({
   section,
   index,
 }: {
   section: LegalSectionItem;
   index: number;
 }) {
-  const Icon = sectionIcons[index % sectionIcons.length];
-
   return (
-    <article className="rounded-xl border border-white/8 bg-white/8 p-5 shadow-[0_18px_48px_rgba(0,0,0,0.18)] backdrop-blur-sm sm:p-6">
-      <div className="flex items-start gap-3">
-        <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-          <Icon className="size-4" />
-        </div>
-        <div className="min-w-0">
-          <h3 className="text-lg font-semibold text-white sm:text-xl">
-            {section.title}
-          </h3>
-        </div>
-      </div>
-
-      <div className="mt-4 text-sm leading-7 text-white/72 sm:text-[15px]">
-        <ReactMarkdown
-          components={{
-            p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
-            ul: ({ children }) => (
-              <ul className="mb-3 ml-5 list-disc space-y-1.5 last:mb-0">
-                {children}
-              </ul>
-            ),
-            li: ({ children }) => <li>{children}</li>,
-            strong: ({ children }) => (
-              <strong className="font-semibold text-white">{children}</strong>
-            ),
-            a: ({ children, href }) => (
-              <a
-                href={href}
-                className="text-primary underline underline-offset-4"
-              >
-                {children}
-              </a>
-            ),
-          }}
-        >
-          {section.body}
-        </ReactMarkdown>
-      </div>
-    </article>
-  );
-}
-
-function SectionDivider({ section }: { section: LegalSectionItem }) {
-  return (
-    <section className="relative overflow-hidden rounded-2xl border border-primary/20 bg-[linear-gradient(135deg,rgba(38,166,154,0.22),rgba(255,255,255,0.06))] p-6 shadow-[0_24px_64px_rgba(0,0,0,0.22)] sm:p-7">
-      <div className="absolute inset-y-0 left-0 w-1.5 bg-primary" />
-      <div className="pl-3 sm:pl-4">
-        <div className="inline-flex items-center rounded-full border border-primary/20 bg-background/10 px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-primary uppercase">
-          Quyền riêng tư
-        </div>
-        <h3 className="mt-4 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-          {section.title}
-        </h3>
-        <div className="mt-4 max-w-3xl text-sm leading-7 text-white/72 sm:text-[15px]">
-          <ReactMarkdown
-            components={{
-              p: ({ children }) => <p>{children}</p>,
-              strong: ({ children }) => (
-                <strong className="font-semibold text-white">{children}</strong>
-              ),
-            }}
-          >
-            {section.body}
-          </ReactMarkdown>
-        </div>
+    <section id={`legal-section-${index + 1}`} className="scroll-mt-24">
+      <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+        {section.title}
+      </h2>
+      <div className="mt-5 text-base leading-8 text-muted-foreground">
+        <LegalMarkdown content={section.body} />
       </div>
     </section>
   );
@@ -198,7 +126,6 @@ function SectionDivider({ section }: { section: LegalSectionItem }) {
 
 export default function LegalContent({ contents }: LegalContentProps) {
   const [activeTab, setActiveTab] = useState(contents[0]?.id ?? "miniapp");
-  const [expanded, setExpanded] = useState(false);
   const activeContent = useMemo(
     () => contents.find((item) => item.id === activeTab) ?? contents[0],
     [activeTab, contents],
@@ -207,35 +134,27 @@ export default function LegalContent({ contents }: LegalContentProps) {
     () => parseLegalContent(activeContent?.content ?? ""),
     [activeContent],
   );
-  const visibleSections = expanded
-    ? parsed.sections
-    : parsed.sections.slice(0, 3);
 
   function handleTabChange(tabId: string) {
     setActiveTab(tabId);
-    setExpanded(false);
   }
 
   return (
     <div>
-      <div className="mx-auto max-w-3xl text-center">
-        <div className="inline-flex items-center rounded-full border border-primary/25 bg-primary/12 px-3 py-1 text-xs font-semibold tracking-[0.18em] text-primary uppercase">
-          Pháp lý
-        </div>
-
-        <h2 className="mt-5 text-4xl font-bold tracking-tight text-white sm:text-5xl">
+      <header className="mx-auto max-w-5xl text-left sm:text-center">
+        <h1 className="max-w-7xl text-5xl font-bold leading-[0.92] tracking-tight text-foreground sm:mx-auto sm:text-5xl lg:text-6xl">
           {parsed.title}
-        </h2>
+        </h1>
 
         {parsed.updatedAt ? (
-          <p className="mt-3 text-sm text-white/60 sm:text-base">
+          <p className="mt-5 text-sm font-semibold text-muted-foreground sm:text-base">
             Cập nhật lần cuối: {parsed.updatedAt}
           </p>
         ) : null}
 
         {contents.length > 1 ? (
-          <div className="mt-6 flex justify-center">
-            <div className="inline-grid min-w-full grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-white/6 p-2 sm:min-w-[30rem]">
+          <div className="mt-8 flex justify-start sm:justify-center">
+            <div className="inline-grid min-w-full grid-cols-2 gap-2 rounded-lg border border-border bg-background p-1.5 sm:min-w-[30rem]">
               {contents.map((item) => {
                 const isActive = item.id === activeTab;
 
@@ -246,15 +165,15 @@ export default function LegalContent({ contents }: LegalContentProps) {
                     onClick={() => handleTabChange(item.id)}
                     className={
                       isActive
-                        ? "rounded-xl bg-white px-4 py-3 text-left shadow-sm transition"
-                        : "rounded-xl px-4 py-3 text-left text-white/72 transition hover:bg-white/8 hover:text-white"
+                        ? "rounded-md bg-primary px-4 py-3 text-left text-primary-foreground shadow-sm transition"
+                        : "rounded-md px-4 py-3 text-left text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
                     }
                   >
                     <div
                       className={
                         isActive
-                          ? "text-sm font-semibold text-[#06211d]"
-                          : "text-sm font-semibold text-white"
+                          ? "text-sm font-semibold text-primary-foreground"
+                          : "text-sm font-semibold text-foreground"
                       }
                     >
                       {item.label}
@@ -262,8 +181,8 @@ export default function LegalContent({ contents }: LegalContentProps) {
                     <div
                       className={
                         isActive
-                          ? "mt-1 text-xs leading-5 text-[#33514d]"
-                          : "mt-1 text-xs leading-5 text-white/55"
+                          ? "mt-1 text-xs leading-5 text-primary-foreground/75"
+                          : "mt-1 text-xs leading-5 text-muted-foreground"
                       }
                     >
                       {item.description}
@@ -274,17 +193,21 @@ export default function LegalContent({ contents }: LegalContentProps) {
             </div>
           </div>
         ) : null}
+      </header>
 
-        {parsed.intro.length > 0 ? (
-          <div className="mt-8 rounded-2xl border border-white/8 bg-white/8 p-5 text-left shadow-[0_20px_50px_rgba(0,0,0,0.18)] backdrop-blur-sm sm:p-6">
-            <div className="space-y-3 text-sm leading-7 text-white/72 sm:text-[15px]">
+      <div className="mt-16 grid gap-12 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-20">
+        <main className="order-2 max-w-2xl lg:order-1">
+          {parsed.intro.length > 0 ? (
+            <div className="mb-12 max-w-2xl text-2xl font-medium leading-tight text-foreground sm:text-3xl">
               {parsed.intro.map((paragraph, index) => (
                 <ReactMarkdown
                   key={`${paragraph}-${index}`}
                   components={{
-                    p: ({ children }) => <p>{children}</p>,
+                    p: ({ children }) => (
+                      <p className="mb-4 last:mb-0">{children}</p>
+                    ),
                     strong: ({ children }) => (
-                      <strong className="font-semibold text-white">
+                      <strong className="font-semibold text-foreground">
                         {children}
                       </strong>
                     ),
@@ -294,40 +217,46 @@ export default function LegalContent({ contents }: LegalContentProps) {
                 </ReactMarkdown>
               ))}
             </div>
+          ) : null}
+
+          <div className="space-y-14">
+            {parsed.sections.map((section, index) => (
+              <ContentSection
+                key={`${section.title}-${index}`}
+                section={section}
+                index={index}
+              />
+            ))}
           </div>
-        ) : null}
-      </div>
+        </main>
 
-      <div className="mt-10 space-y-4">
-        {visibleSections.map((section, index) => (
-          section.title.toLowerCase().includes("chính sách quyền riêng tư") ? (
-            <SectionDivider
-              key={`${section.title}-${index}`}
-              section={section}
-            />
-          ) : (
-            <SectionCard
-              key={`${section.title}-${index}`}
-              section={section}
-              index={index}
-            />
-          )
-        ))}
-      </div>
+        <aside className="order-1 border-t border-border pt-8 lg:sticky lg:top-24 lg:order-2 lg:self-start lg:border-t-0 lg:pt-0">
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground lg:text-2xl">
+            Mục lục
+          </h2>
+          <ol className="mt-6 list-decimal space-y-3 pl-6 text-base font-semibold leading-6 text-foreground lg:text-sm">
+            {parsed.sections.map((section, index) => (
+              <li key={`${section.title}-toc-${index}`}>
+                <a
+                  href={`#legal-section-${index + 1}`}
+                  className="underline underline-offset-3 transition hover:text-primary"
+                >
+                  {section.title}
+                </a>
+              </li>
+            ))}
+          </ol>
 
-      {parsed.sections.length > 3 ? (
-        <div className="mt-8 flex justify-center">
-          <Button
-            type="button"
-            variant="outline"
-            className="rounded-full border-white/15 bg-white/8 px-5 text-white hover:bg-white/12 hover:text-white"
-            onClick={() => setExpanded((value) => !value)}
-          >
-            {expanded ? "Thu gọn nội dung" : "Xem đầy đủ điều khoản"}
-            {expanded ? <ChevronUp /> : <ChevronDown />}
-          </Button>
-        </div>
-      ) : null}
+          <div className="mt-8 hidden border-t border-border pt-5 lg:block">
+            <a
+              href="#legal"
+              className="text-sm font-semibold text-foreground hover:text-primary"
+            >
+              Lên đầu trang ↑
+            </a>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }
